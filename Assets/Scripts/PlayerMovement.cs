@@ -1,15 +1,21 @@
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class PlayerMovement : MonoBehaviour
 {
-	enum State { Idle, Run }
+	enum State { Idle, Run, Warzone }
 
 	[Header("Elements")]
 	private PlayerAnimator playerAnimator;
 
 	[Header("Settings")]
 	[SerializeField] private float moveSpeed;
+	[SerializeField] private float slowMoScale;
 	private State state;
+	private Warzone currentWarzone;
+
+	[Header("Spline Settings")]
+	private float warzoneTimer;
 
 	private void Awake()
 	{
@@ -38,6 +44,9 @@ public class PlayerMovement : MonoBehaviour
 			case State.Run:
 				Move();
 				break;
+			case State.Warzone:
+				ManageWarzoneState();
+				break;
 			default:
 				break;
 		}
@@ -52,5 +61,43 @@ public class PlayerMovement : MonoBehaviour
 	private void Move()
 	{
 		transform.position += Vector3.right * moveSpeed * Time.deltaTime;
+	}
+
+	public void EnteredWarzoneCallback(Warzone warzone)
+	{
+		if (currentWarzone != null)
+			return;
+
+		state = State.Warzone;
+		currentWarzone = warzone;
+
+		playerAnimator.Play(warzone.GetAnimationToPlay(), warzone.GetAnimatorSpeed());
+
+		Time.timeScale = slowMoScale;
+
+		warzoneTimer = 0;
+
+		print("Entered Warzone");
+	}
+
+	private void ManageWarzoneState()
+	{
+		warzoneTimer += Time.deltaTime;
+
+		float splinePercent = warzoneTimer / currentWarzone.GetDuration();
+		transform.position = currentWarzone.GetPlayerSpline().EvaluatePosition(splinePercent);	
+
+		if (splinePercent >= 1)
+			ExitWarzone();
+	}
+
+	private void ExitWarzone()
+	{
+		currentWarzone = null;
+
+		state = State.Run;
+		playerAnimator.Play("Run", 1);
+
+		Time.timeScale = 1;
 	}
 }

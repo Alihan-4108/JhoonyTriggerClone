@@ -5,9 +5,19 @@ public class PlayerAnimator : MonoBehaviour
 	[Header("Elements")]
 	[SerializeField] private Animator animator;
 
-
 	public void PlayRunAnimation()
 	{
-		animator.Play("Run");
+		Play("Run");
+	}
+
+	public void Play(string animationName)
+	{
+		animator.Play(animationName);
+	}
+
+	public void Play(string animationName, float animatorSpeed)
+	{
+		animator.speed = animatorSpeed;
+		Play(animationName);
 	}
 }
