@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 
 	[Header("Elements")]
 	private PlayerAnimator playerAnimator;
+	private PlayerIK playerIK;
 
 	[Header("Settings")]
 	[SerializeField] private float moveSpeed;
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
 	private void Awake()
 	{
 		playerAnimator = GetComponent<PlayerAnimator>();
+		playerIK = GetComponent<PlayerIK>();
 	}
 
 	private void Start()
@@ -71,13 +73,13 @@ public class PlayerMovement : MonoBehaviour
 		state = State.Warzone;
 		currentWarzone = warzone;
 
+		warzoneTimer = 0;
+
 		playerAnimator.Play(warzone.GetAnimationToPlay(), warzone.GetAnimatorSpeed());
 
 		Time.timeScale = slowMoScale;
 
-		warzoneTimer = 0;
-
-		print("Entered Warzone");
+		playerIK.ConfigureIK();
 	}
 
 	private void ManageWarzoneState()
@@ -85,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 		warzoneTimer += Time.deltaTime;
 
 		float splinePercent = warzoneTimer / currentWarzone.GetDuration();
-		transform.position = currentWarzone.GetPlayerSpline().EvaluatePosition(splinePercent);	
+		transform.position = currentWarzone.GetPlayerSpline().EvaluatePosition(splinePercent);
 
 		if (splinePercent >= 1)
 			ExitWarzone();
@@ -97,6 +99,8 @@ public class PlayerMovement : MonoBehaviour
 
 		state = State.Run;
 		playerAnimator.Play("Run", 1);
+
+		playerIK.DisableIK();
 
 		Time.timeScale = 1;
 	}
