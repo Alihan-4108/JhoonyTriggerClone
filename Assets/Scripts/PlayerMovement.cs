@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -14,6 +15,10 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float slowMoScale;
 	private State state;
 	private Warzone currentWarzone;
+
+	[Header("Actions")]
+	public static Action onEnteredWarzone;
+	public static Action onExitedWarzone;
 
 	[Header("Spline Settings")]
 	private float warzoneTimer;
@@ -73,13 +78,17 @@ public class PlayerMovement : MonoBehaviour
 		state = State.Warzone;
 		currentWarzone = warzone;
 
+		currentWarzone.StartAnimatingIKTarget();
+
 		warzoneTimer = 0;
 
 		playerAnimator.Play(warzone.GetAnimationToPlay(), warzone.GetAnimatorSpeed());
 
 		Time.timeScale = slowMoScale;
 
-		playerIK.ConfigureIK();
+		playerIK.ConfigureIK(currentWarzone.GetIKTarget());
+
+		onEnteredWarzone?.Invoke();
 	}
 
 	private void ManageWarzoneState()
@@ -100,8 +109,10 @@ public class PlayerMovement : MonoBehaviour
 		state = State.Run;
 		playerAnimator.Play("Run", 1);
 
+		Time.timeScale = 1;
+
 		playerIK.DisableIK();
 
-		Time.timeScale = 1;
+		onExitedWarzone?.Invoke();
 	}
 }

@@ -8,10 +8,28 @@ public class PlayerIK : MonoBehaviour
 	[Header("Elements")]
 	[SerializeField] private RigBuilder rigBuilder;
 
+	[Header("Contraints")]
+	[SerializeField] private TwoBoneIKConstraint[] twoBoneIKConstraints;
+	[SerializeField] private MultiAimConstraint[] multiAimConstraints;
 
-	public void ConfigureIK()
+	public void ConfigureIK(Transform ikTarget)
 	{
 		rigBuilder.enabled = true;
+
+		foreach (TwoBoneIKConstraint twoBoneIKConstraint in twoBoneIKConstraints)
+		{
+			twoBoneIKConstraint.data.target = ikTarget;
+		}
+
+		foreach (MultiAimConstraint multiAimConstraint in multiAimConstraints)
+		{
+			WeightedTransformArray weightedTransforms = new WeightedTransformArray();
+			weightedTransforms.Add(new WeightedTransform(ikTarget, 1));
+
+			multiAimConstraint.data.sourceObjects = weightedTransforms;
+		}
+
+		rigBuilder.Build();
 	}
 
 	public void DisableIK()
