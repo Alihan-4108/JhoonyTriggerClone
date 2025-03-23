@@ -9,10 +9,16 @@ public class Enemy : MonoBehaviour
 
 	[Header("Elements")]
 	private CharacterRagdoll characterRagdoll;
+	private CharacterIK characterIK;
+	private PlayerMovement playerMovement;
 
 	private void Start()
 	{
 		characterRagdoll = GetComponent<CharacterRagdoll>();
+		characterIK = GetComponent<CharacterIK>();
+
+		playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+		characterIK.ConfigureIK(playerMovement.GetEnemyTarget());
 	}
 
 	public void TakeDamage()

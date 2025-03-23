@@ -8,11 +8,12 @@ public class PlayerMovement : MonoBehaviour
 
 	[Header("Elements")]
 	private PlayerAnimator playerAnimator;
-	private PlayerIK playerIK;
+	private CharacterIK playerIK;
 
 	[Header("Settings")]
 	[SerializeField] private float moveSpeed;
 	[SerializeField] private float slowMoScale;
+	[SerializeField] private Transform enemyTarget;
 	private State state;
 	private Warzone currentWarzone;
 
@@ -26,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
 	private void Awake()
 	{
 		playerAnimator = GetComponent<PlayerAnimator>();
-		playerIK = GetComponent<PlayerIK>();
+		playerIK = GetComponent<CharacterIK>();
 	}
 
 	private void Start()
@@ -116,5 +117,10 @@ public class PlayerMovement : MonoBehaviour
 		playerIK.DisableIK();
 
 		onExitedWarzone?.Invoke();
+	}
+
+	public Transform GetEnemyTarget()
+	{
+		return enemyTarget;
 	}
 }
