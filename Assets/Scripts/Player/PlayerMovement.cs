@@ -4,11 +4,12 @@ using UnityEngine.Splines;
 
 public class PlayerMovement : MonoBehaviour
 {
-	enum State { Idle, Run, Warzone }
+	enum State { Idle, Run, Warzone, Dead}
 
 	[Header("Elements")]
 	private PlayerAnimator playerAnimator;
 	private CharacterIK playerIK;
+	private CharacterRagdoll characterRagdoll;
 
 	[Header("Settings")]
 	[SerializeField] private float moveSpeed;
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("Actions")]
 	public static Action onEnteredWarzone;
 	public static Action onExitedWarzone;
+	public static Action onDied;
 
 	[Header("Spline Settings")]
 	private float warzoneTimer;
@@ -28,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		playerAnimator = GetComponent<PlayerAnimator>();
 		playerIK = GetComponent<CharacterIK>();
+		characterRagdoll = GetComponent<CharacterRagdoll>();
 	}
 
 	private void Start()
@@ -122,5 +125,17 @@ public class PlayerMovement : MonoBehaviour
 	public Transform GetEnemyTarget()
 	{
 		return enemyTarget;
+	}
+
+	public void TakeDamage()
+	{
+		state = State.Dead;
+
+		characterRagdoll.Ragdollify();
+
+		Time.timeScale = 1;
+		Time.fixedDeltaTime = 1f / 50;
+
+		onDied?.Invoke();
 	}
 }

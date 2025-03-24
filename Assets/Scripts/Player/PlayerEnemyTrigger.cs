@@ -44,7 +44,6 @@ public class PlayerEnemyTrigger : MonoBehaviour
 		Vector3 rayOrigin = shootingLine.transform.TransformPoint(shootingLine.GetPosition(0));
 		Vector3 worldSpaceSecondPoint = shootingLine.transform.TransformPoint(shootingLine.GetPosition(1));
 
-
 		Vector3 rayDirection = (worldSpaceSecondPoint - rayOrigin).normalized;
 		float maxDistance = Vector3.Distance(rayOrigin, worldSpaceSecondPoint);
 

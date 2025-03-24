@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,11 +11,13 @@ public class Enemy : MonoBehaviour
 	private CharacterRagdoll characterRagdoll;
 	private CharacterIK characterIK;
 	private PlayerMovement playerMovement;
+	private EnemyShooter enemyShooter;
 
 	private void Start()
 	{
 		characterRagdoll = GetComponent<CharacterRagdoll>();
 		characterIK = GetComponent<CharacterIK>();
+		enemyShooter = GetComponent<EnemyShooter>();
 
 		playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
 		characterIK.ConfigureIK(playerMovement.GetEnemyTarget());
@@ -33,11 +35,13 @@ public class Enemy : MonoBehaviour
 	{
 		state = State.Dead;
 
+		enemyShooter.CancelInvoke("Shoot"); // Atış iptal ediliyor
+
 		characterRagdoll.Ragdollify();
 	}
 
 	public void ShootAtPlayer()
 	{
-		Debug.Log("Shot at Player");
+		enemyShooter.TryShooting();
 	}
 }

@@ -19,12 +19,14 @@ public class PlayerShooter : MonoBehaviour
 	{
 		PlayerMovement.onEnteredWarzone += EnteredWarzoneCallback;
 		PlayerMovement.onExitedWarzone += ExitedWarzoneCallback;
+		PlayerMovement.onDied += DiedCallback;
 	}
 
 	private void OnDestroy()
 	{
 		PlayerMovement.onEnteredWarzone -= EnteredWarzoneCallback;
 		PlayerMovement.onExitedWarzone -= ExitedWarzoneCallback;
+		PlayerMovement.onDied -= DiedCallback;
 	}
 
 	private void Start()
@@ -74,5 +76,11 @@ public class PlayerShooter : MonoBehaviour
 	private void SetShootingLineVisibility(bool visibility)
 	{
 		shootingLine.SetActive(visibility);
+	}
+
+	private void DiedCallback()
+	{
+		canShot = false;
+		SetShootingLineVisibility(false);
 	}
 }
