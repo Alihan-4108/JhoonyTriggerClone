@@ -33,7 +33,17 @@ public class GameManager : MonoBehaviour
 		onGameStateChanged?.Invoke(gameState);
 	}
 
+	public bool IsGameState()
+	{
+		return gameState == GameState.Game;
+	}
+
 	public void Retry()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+	}
+
+	public void NextLevel()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}

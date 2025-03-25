@@ -15,6 +15,9 @@ public class PlayerShooter : MonoBehaviour
 	[SerializeField] private float bulletSpeed;
 	private bool canShot;
 
+	[Header("Actions")]
+	public static Action onShot;
+
 	private void Awake()
 	{
 		PlayerMovement.onEnteredWarzone += EnteredWarzoneCallback;
@@ -40,12 +43,11 @@ public class PlayerShooter : MonoBehaviour
 		{
 			ManageShooting();
 		}
-
 	}
 
 	private void ManageShooting()
 	{
-		if (Input.GetMouseButtonDown(0))
+		if (Input.GetMouseButtonDown(0) && UIBulletsContainer.instance.CanShot())
 		{
 			Shot();
 		}
@@ -59,6 +61,8 @@ public class PlayerShooter : MonoBehaviour
 		Bullet bulletInstance = Instantiate(bulletPrefab, bulletSpawnPosition.position, Quaternion.identity, bulletsParent);
 
 		bulletInstance.Configure(direction * bulletSpeed);
+
+		onShot?.Invoke();
 	}
 
 	private void EnteredWarzoneCallback()

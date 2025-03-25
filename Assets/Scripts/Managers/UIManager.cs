@@ -18,11 +18,6 @@ public class UIManager : MonoBehaviour
 		GameManager.onGameStateChanged -= GameStatedChangedCallback;
 	}
 
-	private void Start()
-	{
-
-	}
-
 	private void GameStatedChangedCallback(GameState gameState)
 	{
 		switch (gameState)
@@ -38,6 +33,8 @@ public class UIManager : MonoBehaviour
 				gamePanel.SetActive(true);
 				break;
 			case GameState.LevelComplete:
+				gamePanel.SetActive(false);
+				levelCompletePanel.SetActive(true);
 				break;
 			case GameState.GameOver:
 				gamePanel.SetActive(false);
@@ -56,5 +53,10 @@ public class UIManager : MonoBehaviour
 	public void RetryButtonCallback()
 	{
 		GameManager.instance.Retry();
+	}
+
+	public void NextLevelButtonCallback()
+	{
+		GameManager.instance.NextLevel();
 	}
 }

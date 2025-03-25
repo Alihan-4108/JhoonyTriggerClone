@@ -16,7 +16,8 @@ public class PlayerDetection : MonoBehaviour
 
 	private void Update()
 	{
-		DetectStuff();
+		if (GameManager.instance.IsGameState())
+			DetectStuff();
 	}
 
 	private void DetectStuff()
@@ -31,14 +32,22 @@ public class PlayerDetection : MonoBehaviour
 			{
 				EnteredWarzoneCallback(detectedObject);
 			}
+			else if (detectedObject.CompareTag("Finish"))
+			{
+				HitFinishLine();
+			}
 		}
+	}
+
+	private void HitFinishLine()
+	{
+		playerMovement.HitFinishLine();
 	}
 
 	private void EnteredWarzoneCallback(Collider warzoneTriggerCollider)
 	{
 		Warzone warzone = warzoneTriggerCollider.GetComponentInParent<Warzone>();
 		playerMovement.EnteredWarzoneCallback(warzone);
-
 	}
 
 	private void OnDrawGizmos()
