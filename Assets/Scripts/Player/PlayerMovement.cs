@@ -4,7 +4,7 @@ using UnityEngine.Splines;
 
 public class PlayerMovement : MonoBehaviour
 {
-	enum State { Idle, Run, Warzone, Dead}
+	enum State { Idle, Run, Warzone, Dead }
 
 	[Header("Elements")]
 	private PlayerAnimator playerAnimator;
@@ -31,6 +31,13 @@ public class PlayerMovement : MonoBehaviour
 		playerAnimator = GetComponent<PlayerAnimator>();
 		playerIK = GetComponent<CharacterIK>();
 		characterRagdoll = GetComponent<CharacterRagdoll>();
+
+		GameManager.onGameStateChanged += GameStateChangedCallback;
+	}
+
+	private void OnDestroy()
+	{
+		GameManager.onGameStateChanged -= GameStateChangedCallback;
 	}
 
 	private void Start()
@@ -40,10 +47,17 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Space))
-			StartRunning();
-
 		ManageState();
+	}
+
+	private void GameStateChangedCallback(GameState gameState)
+	{
+		switch (gameState)
+		{
+			case GameState.Game:
+				StartRunning();
+				break;
+		}
 	}
 
 	private void ManageState()
@@ -137,5 +151,7 @@ public class PlayerMovement : MonoBehaviour
 		Time.fixedDeltaTime = 1f / 50;
 
 		onDied?.Invoke();
+
+		GameManager.instance.SetGameState(GameState.GameOver);
 	}
 }
