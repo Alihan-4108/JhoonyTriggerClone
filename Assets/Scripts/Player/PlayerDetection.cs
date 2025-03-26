@@ -36,6 +36,11 @@ public class PlayerDetection : MonoBehaviour
 			{
 				HitFinishLine();
 			}
+
+			if(detectedObject.TryGetComponent(out Checkpoint checkpoint))
+			{
+				checkpoint.Interact();
+			}
 		}
 	}
 
