@@ -1,50 +1,52 @@
+using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.Splines;
 
 public class Warzone : MonoBehaviour
 {
-	[Header("Elements")]
-	[SerializeField] private SplineContainer playerSplines;
-	[SerializeField] private Transform ikTarget;
-	[SerializeField] private SplineAnimate ikSplineAnimate;
+    [Header("Elements")]
+    [SerializeField] private SplineContainer playerSplines;
+    [SerializeField] private Transform ikTarget;
+    [SerializeField] private SplineAnimate ikSplineAnimate;
+    [SerializeField] private SplineComputer newPlayerSpline;
 
-	[Header("Settings")]
-	[SerializeField] private float duration;
-	[SerializeField] private float animatorSpeed;
-	[SerializeField] private string animationToPlay;
+    [Header("Settings")]
+    [SerializeField] private float duration;
+    [SerializeField] private float animatorSpeed;
+    [SerializeField] private string animationToPlay;
 
-	private void Start()
-	{
-		ikSplineAnimate.Duration = duration;
-	}
+    private void Start()
+    {
+        ikSplineAnimate.Duration = duration;
+    }
 
-	public void StartAnimatingIKTarget()
-	{
-		ikSplineAnimate.Play();
-	}
+    public void StartAnimatingIKTarget()
+    {
+        ikSplineAnimate.Play();
+    }
 
-	public Spline GetPlayerSpline()
-	{
-		return playerSplines.Spline;
-	}
+    public SplineComputer GetPlayerSpline()
+    {
+        return newPlayerSpline;
+    }
 
-	public float GetDuration()
-	{
-		return duration;
-	}
+    public float GetDuration()
+    {
+        return duration;
+    }
 
-	public float GetAnimatorSpeed()
-	{
-		return animatorSpeed;
-	}
+    public float GetAnimatorSpeed()
+    {
+        return animatorSpeed;
+    }
 
-	public string GetAnimationToPlay()
-	{
-		return animationToPlay;
-	}
+    public string GetAnimationToPlay()
+    {
+        return animationToPlay;
+    }
 
-	public Transform GetIKTarget()
-	{
-		return ikTarget;
-	}
+    public Transform GetIKTarget()
+    {
+        return ikTarget;
+    }
 }

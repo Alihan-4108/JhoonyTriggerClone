@@ -1,31 +1,41 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Enemy))]
 public class EnemyShooter : MonoBehaviour
 {
-	[Header("Elements")]
-	[SerializeField] private EnemyBullet bulletPrefab;
-	[SerializeField] private Transform bulletsParent;
-	[SerializeField] private Transform bulletSpawnPoint;
+    [Header("Elements")]
+    [SerializeField] private EnemyBullet bulletPrefab;
+    [SerializeField] private Transform bulletsParent;
+    [SerializeField] private Transform bulletSpawnPoint;
+    private Enemy enemy;
 
-	[Header("Settings")]
-	[SerializeField] private float bulletSpeed;
-	private bool hasShot;
+    [Header("Settings")]
+    [SerializeField] private float bulletSpeed;
+    private bool hasShot;
 
-	public void TryShooting()
-	{
-		if (hasShot)
-			return;
+    private void Awake()
+    {
+        enemy = GetComponent<Enemy>();
+    }
 
-		hasShot = true;
+    public void TryShooting()
+    {
+        if (hasShot)
+            return;
 
-		Invoke("Shoot", .5f);
-	}
+        hasShot = true;
 
-	private void Shoot()
-	{
-		Vector3 velocity = bulletSpeed * bulletSpawnPoint.right;
+        Invoke("Shoot", .3f);
+    }
 
-		EnemyBullet bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity, bulletsParent);
-		bulletInstance.Configure(velocity);
-	}
+    private void Shoot()
+    {
+        if(enemy.IsDead())
+            return;
+
+        Vector3 velocity = bulletSpeed * bulletSpawnPoint.right;
+
+        EnemyBullet bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity, bulletsParent);
+        bulletInstance.Configure(velocity);
+    }
 }
