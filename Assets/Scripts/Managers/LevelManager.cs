@@ -3,56 +3,61 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-	[SerializeField] private GameObject[] levels;
-	private int levelIndex;
+    [Header("Elements")]
+    [SerializeField] private GameObject[] levels;
+    private int levelIndex;
 
-	private void Awake()
-	{
-		LoadData();
+    [Header("Debug")]
+    [SerializeField] private bool preventSpawning;
 
-		SpawnLevel();
+    private void Awake()
+    {
+        LoadData();
 
-		GameManager.onGameStateChanged += GameStateChangedCallback;
-	}
+        if (!preventSpawning)
+            SpawnLevel();
 
-	private void OnDestroy()
-	{
-		GameManager.onGameStateChanged -= GameStateChangedCallback;
-	}
+        GameManager.onGameStateChanged += GameStateChangedCallback;
+    }
 
-	private void GameStateChangedCallback(GameState gameState)
-	{
-		switch (gameState)
-		{
-			case GameState.LevelComplete:
-				levelIndex++;
-				SaveData();
-				break;
-		}
-	}
+    private void OnDestroy()
+    {
+        GameManager.onGameStateChanged -= GameStateChangedCallback;
+    }
 
-	private void SpawnLevel()
-	{
-		levelIndex = levelIndex % levels.Length;
+    private void GameStateChangedCallback(GameState gameState)
+    {
+        switch (gameState)
+        {
+            case GameState.LevelComplete:
+                levelIndex++;
+                SaveData();
+                break;
+        }
+    }
 
-		GameObject levelInstance = Instantiate(levels[levelIndex], transform);
+    private void SpawnLevel()
+    {
+        levelIndex = levelIndex % levels.Length;
 
-		StartCoroutine(EnableLevelCoroutine());
+        GameObject levelInstance = Instantiate(levels[levelIndex], transform);
 
-		IEnumerator EnableLevelCoroutine()
-		{
-			yield return new WaitForSeconds(Time.deltaTime);
-			levelInstance.SetActive(true);
-		}
-	}
+        StartCoroutine(EnableLevelCoroutine());
 
-	private void LoadData()
-	{
-		levelIndex = PlayerPrefs.GetInt("Level");
-	}
+        IEnumerator EnableLevelCoroutine()
+        {
+            yield return new WaitForSeconds(Time.deltaTime);
+            levelInstance.SetActive(true);
+        }
+    }
 
-	private void SaveData()
-	{
-		PlayerPrefs.SetInt("Level", levelIndex);
-	}
+    private void LoadData()
+    {
+        levelIndex = PlayerPrefs.GetInt("Level");
+    }
+
+    private void SaveData()
+    {
+        PlayerPrefs.SetInt("Level", levelIndex);
+    }
 }

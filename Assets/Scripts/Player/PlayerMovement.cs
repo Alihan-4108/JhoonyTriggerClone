@@ -43,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         state = State.Idle;
+
+        transform.position = CheckpointManager.instance.GetLastCheckpointPosition();
     }
 
     private void Update()
@@ -119,7 +121,22 @@ public class PlayerMovement : MonoBehaviour
         transform.position = currentWarzone.GetPlayerSpline().EvaluatePosition(splinePercent);
 
         if (splinePercent >= 1)
+            TryExitWarzone();
+    }
+
+    private void TryExitWarzone()
+    {
+        Warzone nextWarzone = currentWarzone.GetNextWarzone();
+
+        if (nextWarzone == null)
+        {
             ExitWarzone();
+        }
+        else
+        {
+            currentWarzone = null;
+            EnteredWarzoneCallback(nextWarzone);
+        }
     }
 
     private void ExitWarzone()
@@ -162,5 +179,10 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator.PlayIdleAnimation();
 
         GameManager.instance.SetGameState(GameState.LevelComplete);
+    }
+
+    public Warzone GetCurrentWarzone()
+    {
+        return currentWarzone;
     }
 }

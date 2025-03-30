@@ -13,6 +13,9 @@ public class Warzone : MonoBehaviour
     [SerializeField] private float animatorSpeed;
     [SerializeField] private string animationToPlay;
 
+    [Header("Next Warzone")]
+    [SerializeField] private Warzone nextWarzone;
+
     private void Start()
     {
         ikSplineFollower.followDuration = duration;
@@ -46,5 +49,10 @@ public class Warzone : MonoBehaviour
     public Transform GetIKTarget()
     {
         return ikTarget;
+    }
+
+    public Warzone GetNextWarzone()
+    {
+        return nextWarzone;
     }
 }

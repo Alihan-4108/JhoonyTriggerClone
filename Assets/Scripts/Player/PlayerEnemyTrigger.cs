@@ -3,85 +3,89 @@ using UnityEngine;
 
 public class PlayerEnemyTrigger : MonoBehaviour
 {
-	[Header("Elements")]
-	[SerializeField] private LineRenderer shootingLine;
+    [Header("Elements")]
+    [SerializeField] private LineRenderer shootingLine;
+    private PlayerMovement playerMovement;
 
-	[Header("Settings")]
-	[SerializeField] private LayerMask enemiesMask;
-	private List<Enemy> currentEnemies = new List<Enemy>();
-	private bool canCheckForShootingEnemies;
+    [Header("Settings")]
+    [SerializeField] private LayerMask enemiesMask;
+    private List<Enemy> currentEnemies = new List<Enemy>();
+    private bool canCheckForShootingEnemies;
 
-	private void Awake()
-	{
-		PlayerMovement.onEnteredWarzone += EnteredWarzoneCallback;
-		PlayerMovement.onExitedWarzone += ExitedWarzoneCallback;
-	}
+    private void Awake()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
 
-	private void OnDestroy()
-	{
-		PlayerMovement.onEnteredWarzone -= EnteredWarzoneCallback;
-		PlayerMovement.onEnteredWarzone -= ExitedWarzoneCallback;
-	}
+        PlayerMovement.onEnteredWarzone += EnteredWarzoneCallback;
+        PlayerMovement.onExitedWarzone += ExitedWarzoneCallback;
+    }
 
-	private void Update()
-	{
-		if (canCheckForShootingEnemies)
-			CheckForShootingEnemies();
-	}
+    private void OnDestroy()
+    {
+        PlayerMovement.onEnteredWarzone -= EnteredWarzoneCallback;
+        PlayerMovement.onEnteredWarzone -= ExitedWarzoneCallback;
+    }
 
-	private void EnteredWarzoneCallback()
-	{
-		canCheckForShootingEnemies = true;
-	}
+    private void Update()
+    {
+        if (canCheckForShootingEnemies)
+            CheckForShootingEnemies();
+    }
 
-	private void ExitedWarzoneCallback()
-	{
-		canCheckForShootingEnemies = false;
-	}
+    private void EnteredWarzoneCallback()
+    {
+        canCheckForShootingEnemies = true;
+    }
 
-	private void CheckForShootingEnemies()
-	{
-		Vector3 rayOrigin = shootingLine.transform.TransformPoint(shootingLine.GetPosition(0));
-		Vector3 worldSpaceSecondPoint = shootingLine.transform.TransformPoint(shootingLine.GetPosition(1));
+    private void ExitedWarzoneCallback()
+    {
+        canCheckForShootingEnemies = false;
+    }
 
-		Vector3 rayDirection = (worldSpaceSecondPoint - rayOrigin).normalized;
-		float maxDistance = Vector3.Distance(rayOrigin, worldSpaceSecondPoint);
+    private void CheckForShootingEnemies()
+    {
+        Vector3 rayOrigin = shootingLine.transform.TransformPoint(shootingLine.GetPosition(0));
+        Vector3 worldSpaceSecondPoint = shootingLine.transform.TransformPoint(shootingLine.GetPosition(1));
 
-		RaycastHit[] hits = Physics.RaycastAll(rayOrigin, rayDirection, maxDistance, enemiesMask);
+        Vector3 rayDirection = (worldSpaceSecondPoint - rayOrigin).normalized;
+        float maxDistance = Vector3.Distance(rayOrigin, worldSpaceSecondPoint);
 
-		for (int i = 0; i < hits.Length; i++)
-		{
-			Enemy currentEnemy = hits[i].collider.GetComponent<Enemy>();
+        RaycastHit[] hits = Physics.RaycastAll(rayOrigin, rayDirection, maxDistance, enemiesMask);
 
-			if (!currentEnemies.Contains(currentEnemy))
-			{
-				currentEnemies.Add(currentEnemy);
-			}
-		}
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Enemy currentEnemy = hits[i].collider.GetComponent<Enemy>();
 
-		List<Enemy> enemiesToRemove = new List<Enemy>();
+            if (!currentEnemies.Contains(currentEnemy))
+            {
+                currentEnemies.Add(currentEnemy);
+            }
+        }
 
-		foreach (Enemy enemy in currentEnemies)
-		{
-			bool enemyFound = false;
+        List<Enemy> enemiesToRemove = new List<Enemy>();
 
-			for (int i = 0; i < hits.Length; i++)
-			{
-				if (hits[i].collider.GetComponent<Enemy>() == enemy)
-				{
-					enemyFound = true;
-					break;
-				}
-			}
+        foreach (Enemy enemy in currentEnemies)
+        {
+            bool enemyFound = false;
 
-			if(!enemyFound)
-			{
-				enemy.ShootAtPlayer();
-				enemiesToRemove.Add(enemy);
-			}
-		}
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].collider.GetComponent<Enemy>() == enemy)
+                {
+                    enemyFound = true;
+                    break;
+                }
+            }
 
-		foreach (Enemy enemy in enemiesToRemove)
-			currentEnemies.Remove(enemy);
-	}
+            if (!enemyFound)
+            {
+                if (enemy.transform.parent == playerMovement.GetCurrentWarzone().transform)
+                    enemy.ShootAtPlayer();
+                enemiesToRemove.Add(enemy);
+            }
+        }
+
+        foreach (Enemy enemy in enemiesToRemove)
+            currentEnemies.Remove(enemy);
+    }
 }
